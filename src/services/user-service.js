@@ -49,6 +49,19 @@ class UserService {
         }
     }
 
+    async isAuthenticated (token) {
+        try {
+            const response = this.verifyToken(token);
+            if (!response) throw {error: 'Invalid token'};
+            const user = await this.userRepository.getById(response.id);
+            if (!user) throw {error: 'No user with this token exists'};
+            return user.id;
+        } catch (error) {
+            console.log("Unable to authenticated user!");
+            throw error;
+        }
+    }
+
     async checkPassword (userInputPlainPassword, encryptedPassword) {
         try {
             return await bcrypt.compare(userInputPlainPassword, encryptedPassword);
