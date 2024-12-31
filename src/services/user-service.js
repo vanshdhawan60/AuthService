@@ -1,6 +1,7 @@
 const UserRepository = require('../repository/user-repository');
 const { JSON_SECRET_KEY } = require('../config/serverConfig');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 class UserService {
 
@@ -44,6 +45,31 @@ class UserService {
             return user;
         } catch (error) {
             console.log("Unable to verify user token!");
+            throw error;
+        }
+    }
+
+    async checkPassword (userInputPlainPassword, encryptedPassword) {
+        try {
+            return await bcrypt.compare(userInputPlainPassword, encryptedPassword);
+        } catch (error) {
+            console.log("Unable to match user password!");
+            throw error;
+        }
+    }
+
+    async signin (email, password) {
+        try {
+            const user = await this.userRepository.getByEmail(email);
+            const passwordMatch = await this.checkPassword(password, user.password);
+            if (!passwordMatch) {
+                console.log("Password doesnt match");
+                throw {error: "Incorrect password"};
+            }
+            const token = this.generateToken({email: user.email, id: user.id});
+            return token;
+        } catch (error) {
+            console.log("Unable to signin !");
             throw error;
         }
     }

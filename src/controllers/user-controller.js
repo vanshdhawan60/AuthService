@@ -43,7 +43,28 @@ const destroy = async (req, res) => {
     }
 }
 
+const signin = async (req, res) => {
+    try {
+        const response = await userService.signin(req.body.email, req.body.password);
+        return res.status(201).json({
+            status: true,
+            error: {},
+            msg: "Successfully signin in.",
+            data: response
+        })
+    } catch (error) {
+        console.log("Unable to sigin")
+        return res.status(500).json({
+            status: false,
+            error: error,
+            msg: "Unable to signin",
+            data: {}
+        })
+    }
+}
+
 module.exports = {
     create,
-    destroy
+    destroy,
+    signin
 }
