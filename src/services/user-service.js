@@ -87,6 +87,15 @@ class UserService {
         }
     }
 
+    async isAdmin (userId) {
+        try {
+            return await this.userRepository.isAdmin(userId);
+        } catch (error) {
+            console.log("eror in isAdmin block in user service!");
+            throw error;
+        }
+    }
+
 }
 
 module.exports = UserService;
